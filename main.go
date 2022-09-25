@@ -1,4 +1,4 @@
-package avito_tech_test_task
+package main
 
 import "fmt"
 
