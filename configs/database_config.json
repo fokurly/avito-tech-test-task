@@ -1,0 +1,7 @@
+{
+  "create_database_string": "create table if not exists Client id bigint generated always as identity, employee_name VARCHAR(60), balance decimal);",
+  "user": "whschool",
+  "password": "qwerty",
+  "host": "localhost",
+  "dbname": "WhSchool"
+}
