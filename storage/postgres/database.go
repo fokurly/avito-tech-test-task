@@ -6,6 +6,7 @@ import (
 	"github.com/fokurly/avito-tech-test-task/utils"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 type Db struct {
@@ -15,13 +16,16 @@ type Db struct {
 
 func NewDatabase() (*Db, error) {
 	config := utils.ParseDatabaseConfigByKey("database_config", false)
+	query := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable", config.User, config.Password, config.Host, config.Dbname)
+	logrus.Println(query)
+	logrus.Println(config.CreateTableString)
+	db, err := sqlx.Open("postgres", query)
 
-	db, err := sqlx.Open("postgres", fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable", config.User, config.Password, config.Host, config.Dbname))
 	if err != nil {
 		return nil, err
 	}
 
-	// Убрать, потому что будут файлы sql, которые будут запускаться в докере перед основной программой
+	// Убрать, потому что будут файлы sql, которые будут запускаться в докере
 	db.MustExec(config.CreateTableString)
 
 	return &Db{db: db, config: config}, nil

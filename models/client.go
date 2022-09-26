@@ -1,9 +1,6 @@
 package models
 
-import "sync"
-
 type Client struct {
-	Id      int64
-	Balance float64
-	mu      sync.RWMutex
+	Id    int64   `json:"client_id" binding:"required,min=1"`
+	Money float64 `json:"money" binding:"required,min=0"`
 }

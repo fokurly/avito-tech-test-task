@@ -18,6 +18,7 @@ func (s *clientBalanceService) Run() error {
 	eng := gin.Default()
 	//eng.Use(s.authMiddleware)
 	eng.GET("/get_client_balance", s.GetClientBalance)
+	eng.GET("/get_all_clients", s.GetAllClients)
 	eng.POST("/increase_client_balance", s.IncreaseClientBalance)
 	eng.POST("/decrease_client_balance", s.DecreaseClientBalance)
 	eng.POST("/transfer_money", s.TransferMoney)
