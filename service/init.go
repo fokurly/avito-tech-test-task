@@ -23,7 +23,7 @@ func (s *clientBalanceService) Run() error {
 	eng.POST("/decrease_client_balance", s.DecreaseClientBalance)
 	eng.POST("/transfer_money", s.TransferMoney)
 
-	return eng.Run(":8070")
+	return eng.Run(":4000")
 
 }
 

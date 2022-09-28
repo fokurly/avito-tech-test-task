@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/fokurly/avito-tech-test-task/models"
+	"github.com/fokurly/avito-tech-test-task/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
@@ -33,8 +34,19 @@ func (s *clientBalanceService) GetClientBalance(ctx *gin.Context) {
 		return
 	}
 
-	// Может быть возвращать целиком клиента?
-	ctx.JSON(http.StatusOK, gin.H{"client_balance": balance})
+	currency := ctx.Query("currency")
+	if currency != "" {
+		newBalance, err := utils.ConvertBalanceToAnotherCurrency(*balance, currency)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, fmt.Sprintf("could not convert to another currency. error: %v", err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{fmt.Sprintf("client_balance (%s)", currency): newBalance})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"client_balance (RUB)": balance})
 }
 
 func (s *clientBalanceService) GetAllClients(ctx *gin.Context) {
@@ -47,9 +59,6 @@ func (s *clientBalanceService) GetAllClients(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, employees)
 }
 
-// Вопрос. Как добавлять клиентов? По условию сказано, что данные о балансе появляются при первом пополнении баланса, поэтому примем,
-// что они уже как будто существуют, но их баланс равен 0.
-// Или сделать добавление клиента??
 func (s *clientBalanceService) IncreaseClientBalance(ctx *gin.Context) {
 	var client models.Client
 	if err := ctx.MustBindWith(&client, binding.JSON); err != nil {
@@ -57,7 +66,6 @@ func (s *clientBalanceService) IncreaseClientBalance(ctx *gin.Context) {
 		return
 	}
 
-	//var currentBalance float64
 	currentBalance, err := s.storage.IncreaseBalance(client)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, fmt.Sprintf("could not increase client's balance. error: %v", err))
@@ -83,7 +91,6 @@ func (s *clientBalanceService) DecreaseClientBalance(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, fmt.Sprintf("money was withdrawn from the account with id %d. current balance is %f", client.Id, *currentBalance))
 }
 
-// Принимает json структуру с 3мя полями. Кому, от кого, сумма
 func (s *clientBalanceService) TransferMoney(ctx *gin.Context) {
 	var transfer models.Transfer
 	if err := ctx.MustBindWith(&transfer, binding.JSON); err != nil {
