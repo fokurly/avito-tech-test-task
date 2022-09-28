@@ -99,7 +99,7 @@ func (s *clientBalanceService) TransferMoney(ctx *gin.Context) {
 	}
 
 	senderClient := &models.Client{Id: transfer.SenderId, Money: transfer.Amount}
-	receiverClient := &models.Client{Id: transfer.SenderId, Money: transfer.Amount}
+	receiverClient := &models.Client{Id: transfer.RecipientId, Money: transfer.Amount}
 
 	currentSenderBalance, err := s.storage.DecreaseBalance(*senderClient)
 	if err != nil {

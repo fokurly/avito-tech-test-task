@@ -16,7 +16,6 @@ type Db struct {
 
 func NewDatabase() (*Db, error) {
 	config := utils.ParseDatabaseConfigByKey("database_config", false)
-	//dbinfo := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", config.User, config.Password, config.Host, "5432", config.Dbname)
 	query := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable", config.User, config.Password, config.Host, config.Dbname)
 	logrus.Println(query)
 	logrus.Println(config.Host)
